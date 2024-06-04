@@ -1,0 +1,22 @@
+logger:
+  format: "[%(levelname)-8s] %(asctime)s, %(taskName)s, %(name)s [%(process)d (%(thread)d), %(processName)s (%(threadName)s)] %(message)s"
+  datefmt: "%Y/%m/%d %H:%M:%S"
+  level: "DEBUG"
+data:
+  train: "./data/split/train/train.csv"
+  validation: "./data/split/validation/validation.csv"
+  test: "./data/split/test/test.csv"
+  cache: "./data/split/cache/"
+  language: "en"
+  checkLanguage: True
+  checkLanguageColumn: "Word"
+  removeNaN: True
+  removeNaNColumn: "Word"
+  removeNaNReferenceColumn: "Sent_ID"
+  groupBy: "Sent_ID"
+performance:
+  processes: 16
+utils:
+  printPercentPeriod: 2
+  
+
