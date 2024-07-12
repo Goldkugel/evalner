@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
-
-
 ZERO = 0
 ONE = 1
 TWO = 2
@@ -17,26 +14,37 @@ TWENTYFOUR = 24
 SIXTY = 60
 HUNDRED = 100
 THOUSEND = 1000
+ONEHUNDREDTWENTYEIGHT = 128
 SPACE = " "
 EMPTYSTRING = ""
+
+NULL_STRINGS = ["null", "NA", "nan", ""]
 
 EXPERIMENTSFOLDER = "./experiments"
 INPUTFOLDER = "in"
 OUTPUTFOLDER = "out"
+
+TASKLIST_INPUT_FOLDER = "in"
+TASKLIST_OUTPUT_FOLDER = "out"
 
 CSVFILE = ".csv"
 NEWLINE = "\n"
 APPENDTOFILE = "a"
 WRITE = "w"
 
+UTF8 = "utf8"
+ASCII = "ascii"
+IGNORE = 'ignore'
+LITTLE = "little"
+
+MODEL_RESULT_WORD_COLUMN = "word"
+
+TOKENSTARTCHARS = "##"
+
 INPUTFILENAME = "input{}.csv"
 OUTPUTFILENAME = "output{}.csv"
 
 EVAL_RETURNVALUE = "{} [Value: {}]"
-
-
-# In[ ]:
-
 
 RETURNVALUE_stdMsg = "Everything went well."
 RETURNVALUE_noLoggerCreated = "There is no Logger which can be used to log something."
@@ -44,6 +52,8 @@ RETURNVALUE_loggingError = "An error ({}) occured while logging."
 
 LOGGER_replacingLogger = "The new singleton logger is replacing another logger."
 
+TASKLIST_startingTask = "Starting Task \"{}\"."
+TASKLIST_splittingDataForTask = "Splitting the data."
 TASKLIST_overwritingInputData = "The new input data (\"{}\") is replacing another data (\"{}\")."
 TASKLIST_noInputDataGiven = "The given input data is None."
 TASKLIST_noExperimentNameSet = "There is no experiment name set. Please set one."
@@ -51,6 +61,8 @@ TASKLIST_noRunNameSet = "There is no run name set. Please set one."
 TASKLIST_noExperimentFolderCreated = "The experiment folder is not created. Is this the right directory?"
 TASKLIST_folderCreatedForThisExperiment = "A folder for the experiment \"{}\" and the first run (\"{}\") was created."
 TASKLIST_folderCreatedForThisRun = "A folder for the run \"{}\" has been created."
+TASKLIST_inputFolderForRunCreated = "The input folder for the run \"{}\" has been created."
+TASKLIST_outputFolderForRunCreated = "The output folder for the run \"{}\" has been created."
 TASKLIST_noTaskInTaskList = "There are no tasks in the list."
 TASKLIST_splitDataFailed = "Splitting of the input data (\"{}\") into pieces failed."
 TASKLIST_START_createDirsWarning = "Warnings occurred while creating the directories."
@@ -154,7 +166,7 @@ writeResultToFile = "Writing result to file {}."
 processEnded = "Process \"{}\" ended, results have been stored in \"{}\""
 copyDataForNextTask = "Copy data for next task."
 
-startingTask = "Starting Task \"{}\"."
+
 checkDirectoriesAndFiles = "Check directories and files for task \"{}\"."
 errorCheckDirectoriesAndFiles = "Error ({}) while checking directories and files for process \"{}\"."
 overwriteOutputFiles = "Overwriting output files for task \"{}.\""

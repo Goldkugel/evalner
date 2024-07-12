@@ -1,15 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import logging
+import math
+from datetime                          import timedelta, datetime
 
-# In[ ]:
-
-
-from Values import *
-
-
-# In[2]:
-
+from Values              import *
 
 """
 This class is used to load a logger to format the output and enrich it

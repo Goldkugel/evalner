@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import pandas as pd
+import numpy as np
+import os
+import math
+from datetime             import timedelta, datetime
 
-# In[ ]:
-
-
-from Values      import *
-from ReturnValue import *
-
-
-
-# In[5]:
-
+from ReturnValue          import *
+from Values               import *
+from Configuration        import *
+from Logger               import *
 
 class Data:
     
@@ -37,6 +36,32 @@ class Data:
         self.__wordIDColumn = None
         self.__wordColumn = None
         self.__labelColumn = None
+
+    """
+    
+    """
+    def addColumn(self, column, columnName = "column") -> ReturnValue:
+        ret = ReturnValue(ZERO)
+
+        if (self.__data is None):
+            self.__data = pd.DataFrame(column, columns = [columnName])
+        else:
+            if (len(column) == len(self.__data)):
+                self.__data[columnName] = column
+            else:
+                ret.setValue(-ONE)
+
+        return ret
+    
+    def setData(self, data = None) -> ReturnValue:
+        ret = ReturnValue(ZERO)
+
+        if (self.__data is not None):
+            ret.setValue(ONE)
+
+        self.__data = data
+
+        return ret
 
     """
     
@@ -149,7 +174,8 @@ class Data:
         
         if directory is not None:
             if (os.path.isfile(directory)):
-                self.__data = pd.read_csv(directory)
+                self.__data = pd.read_csv(directory, keep_default_na = False,
+                    low_memory = False)
             else:
                 ret.setValue(-ONE)
                 ret.setMessage(DATA_LOADCSVDATA_fileNotFound.

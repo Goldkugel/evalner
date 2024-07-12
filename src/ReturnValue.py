@@ -1,15 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-
-# In[ ]:
-
-
-from Values import *
-
-
-# In[2]:
-
+from Values               import *
+from Logger               import *
 
 """
 

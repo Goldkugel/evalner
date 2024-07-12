@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import os.path
+import yaml
 
-# In[2]:
-
+from Values import *
 
 """
 This class is used to load the configuration of a process. It provides

@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+from Values      import * 
+from Logger      import *
+from ReturnValue import *
+from Data        import *
 
-# In[ ]:
+from transformers          import AutoTokenizer
+from transformers          import AutoModelForTokenClassification
+from transformers          import pipeline
 
-
-from Values import *
-
-
-# In[ ]:
-
+import pandas as pd
+import os
 
 def concat(elements, noPreConcatString = [], noPostConcatString = []):
     ret = None
@@ -30,9 +32,6 @@ def concat(elements, noPreConcatString = [], noPostConcatString = []):
     return ret
 
 
-# In[ ]:
-
-
 def createSentences(data, noPreSpaceCharacters, noPostSpaceCharacters):
     ret = None
 
@@ -47,7 +46,10 @@ def createSentences(data, noPreSpaceCharacters, noPostSpaceCharacters):
         for sentenceIndex, sentenceID in enumerate(sentenceIDs):
             sentenceWords = data.getData()[data.getData()[data.
                 getSentenceIDColumn()] == sentenceID]
-            sentenceWords = sentenceWords[data.getWordColumn()]
+            sentenceWords = sentenceWords[data.getWordColumn()].reset_index(drop = True)
+
+            for wordIndex in range(ZERO, len(sentenceWords)):
+                sentenceWords[wordIndex] = str(sentenceWords[wordIndex])
             
             ret[sentenceIndex] = concat(sentenceWords, 
                 noPreSpaceCharacters, noPostSpaceCharacters)
@@ -56,11 +58,7 @@ def createSentences(data, noPreSpaceCharacters, noPostSpaceCharacters):
 
     return ret
 
-
-# In[ ]:
-
-
-def diffWord(data, words, prints = FIVE):
+def diffWord(data, words, prints = FIVE, offSet = ZERO):
     ret = ReturnValue(ZERO)
 
     if (data is not None and words is not None and data.getData() is not None 
@@ -71,7 +69,7 @@ def diffWord(data, words, prints = FIVE):
 
         Logger.getSingletonLogger().startPrintProgress(length)
 
-        for index in range(ZERO, length):
+        for index in range(offSet, length):
             
             row = data.getData().loc[index]
 
@@ -93,10 +91,63 @@ def diffWord(data, words, prints = FIVE):
                         words[printIndex]))
                 break
 
-            Logger.printProgress()
+            Logger.getSingletonLogger().printProgress()
     else:
         Logger.getSingletonLogger().printWarning(diffWordsNotPossible)
         ret.setValue(ONE)
     
     return ret
 
+
+def applyModel(model, sentences, file):
+
+    if (not os.path.isfile(file)):
+
+        modelResults = [None] * len(sentences)
+
+        Logger.getSingletonLogger().startPrintProgress(len(sentences))
+
+        for sentenceIndex, sentence in enumerate(sentences):
+            modelResults[sentenceIndex] = model(sentence)
+            Logger.getSingletonLogger().printProgress()
+
+        header = True
+        mode = WRITE
+
+        Logger.getSingletonLogger().startPrintProgress(len(sentences))
+
+        for modelResultIndex in range(ZERO, len(modelResults)):
+            res = pd.DataFrame(modelResults[modelResultIndex])
+
+            res[MODEL_RESULT_WORD_COLUMN] = res[MODEL_RESULT_WORD_COLUMN].astype(str)
+
+            res.to_csv(
+                file, 
+                index = False, 
+                mode = mode, 
+                header = header
+            ) 
+
+            if header:
+                header = False
+                mode = APPENDTOFILE
+            
+        Logger.getSingletonLogger().printProgress()
+
+def removeWords(data: Data = None, wordList: list = None) -> ReturnValue:
+    ret = ReturnValue(ZERO)
+
+    if (data is not None 
+        and data.getWordColumn() is not None 
+        and wordList is not None 
+        and len(wordList) >= ONE):
+
+        df = data.getData()
+        filter= df[data.getWordColumn()].isin(wordList)
+        df = df[~filter].reset_index(drop = True)
+        data.setData(df)
+
+    else:
+        ret.setValue(-ONE)
+
+    return ret

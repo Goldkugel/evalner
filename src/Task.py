@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import multiprocessing
+import pandas as pd
+import os
+import os.path
 
-# In[ ]:
-
-
-from ReturnValue import *
-from Values import *
-
-
-# In[3]:
-
+from Values                              import *
+from Utils                               import *
+from Data                                import *
+from MultiprocessFunctions               import *
+from Logger                              import *
 
 """
 This class takes care of a task one can perform on one or multiple files.

@@ -1,15 +1,19 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import multiprocessing
+import pandas as pd
+import os
+import shutil
+import filecmp
 
-# In[1]:
-
-
+from Values                              import *
+from Utils                               import *
+from Data                                import *
+from MultiprocessFunctions               import *
+from Logger                              import *
 from Task                                import *
-
-
-# In[2]:
-
+from ReturnValue                         import *
 
 """
 
@@ -152,6 +156,24 @@ class TaskList:
                             ret.setValue(TWO)
                             ret.setMessage(TASKLIST_folderCreatedForThisRun.
                                 format(self.getRunName()))
+                            
+                    checkPathInputFolder = os.path.join(checkPath, TASKLIST_INPUT_FOLDER)
+                    checkPathOutputFolder = os.path.join(checkPath, TASKLIST_OUTPUT_FOLDER)
+
+                    if not os.path.isdir(checkPathInputFolder):
+                        os.mkdir(checkPathInputFolder)
+                        if (ret.getValue() == ZERO):
+                            ret.setValue(THREE)
+                            ret.setMessage(TASKLIST_inputFolderForRunCreated.
+                                format(self.getRunName()))
+                            
+                    if not os.path.isdir(checkPathOutputFolder):
+                        os.mkdir(checkPathOutputFolder)
+                        if (ret.getValue() == ZERO):
+                            ret.setValue(FOUR)
+                            ret.setMessage(TASKLIST_outputFolderForRunCreated.
+                                format(self.getRunName()))
+
                 else:
                     ret.setValue(-THREE)
                     ret.setMessage(TASKLIST_noExperimentFolderCreated)
@@ -186,22 +208,28 @@ class TaskList:
 
                 index = ZERO
                 while(index < len(self.getTaskList()) and 
-                    ret.getValue() == ZERO):
+                    ret.getValue() >= ZERO):
                     task = self.getTask(index = index)
 
                     createDirs = task.createFolders()
                     if (createDirs.getValue() >= ZERO):
                         createDirs.eval()
-                        Logger.getSingletonLogger().printInfo(
-                                startingTask.format(task.getTaskName()))
 
+                        Logger.getSingletonLogger().printInfo(
+                                TASKLIST_startingTask.format(task.getTaskName()))
+
+                        # First Task
                         if (index == ZERO):
+
+                            # Check if input file has the same content as 
+                            # the file stored in the 
+
                             Logger.getSingletonLogger().printInfo(
-                                splittingDataForTask)
+                                TASKLIST_splittingDataForTask)
                             
                             split = self.splitInputData(task.getInputFileList())
 
-                            if (split.getValue() != ZERO):
+                            if (split.getValue() < ZERO):
                                 ret.setValue(-THREE)
                                 ret.setMessage(TASKLIST_splitDataFailed.
                                     format(task.getTaskName()))
@@ -581,3 +609,5 @@ class TaskList:
 
         return ret
 
+
+# %%

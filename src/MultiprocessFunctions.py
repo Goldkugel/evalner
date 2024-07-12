@@ -1,15 +1,41 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import pandas as pd
+import itertools
+import math
 
-# In[ ]:
+from pandas import concat
+
+from Utils              import *
+from Data               import *
+from Values             import *
+from ReturnValue        import *
 
 
-from Values import *
-from ReturnValue import *
-
-
-# In[ ]:
+#def removeNonASCII(data, index, resultData, resultValue, args) -> ReturnValue:
+#    ret = ReturnValue(ZERO)
+#
+#    if (data.getData() is not None and data.getWordColumn() is not None):
+#        row = pd.DataFrame(
+#            data = [data.getData().iloc[index]], 
+#            columns = data.getData().columns
+#        ).reset_index(drop = True)
+#
+#        resultValue[index] = ZERO
+#
+#        if (row is not None and row[data.getWordColumn()][ZERO] is not None):
+#            row.loc[ZERO, data.getWordColumn()] = \
+#                str(row.loc[ZERO, data.getWordColumn()]).encode(ASCII, errors = IGNORE).decode(UTF8)
+#            resultValue[index] = ONE
+#
+#        resultData[index] = row
+#    else:
+#        resultValue[index] = -ONE
+#        ret.setValue(ONE)
+#        ret.setMessage()
+#
+#    return ret
 
 
 def deleteDocuments(data, index, resultData, resultValue, args) -> ReturnValue:
@@ -38,10 +64,6 @@ def deleteDocuments(data, index, resultData, resultValue, args) -> ReturnValue:
 
     return ret
 
-
-# In[ ]:
-
-
 def deleteSentences(data, index, resultData, resultValue, args) -> ReturnValue:
     ret = ReturnValue(ZERO)
 
@@ -68,10 +90,6 @@ def deleteSentences(data, index, resultData, resultValue, args) -> ReturnValue:
 
     return ret
 
-
-# In[ ]:
-
-
 def deleteNaN(data, index, resultData, resultValue, args) -> ReturnValue:
     ret = ReturnValue(ZERO)
 
@@ -86,7 +104,7 @@ def deleteNaN(data, index, resultData, resultValue, args) -> ReturnValue:
 
         remove = all(row.isna()[data.getWordColumn()])
 
-        if (row is None or remove):
+        if (row is None or remove or str(row[data.getWordColumn()][ZERO]) in NULL_STRINGS):
                 row = None
                 resultValue[index] = ONE
         
@@ -97,10 +115,6 @@ def deleteNaN(data, index, resultData, resultValue, args) -> ReturnValue:
         ret.setMessage()
 
     return ret
-
-
-# In[ ]:
-
 
 def deleteCharacters(data, index, resultData, resultValue, args) -> ReturnValue:
     ret = ReturnValue(ZERO)
@@ -115,7 +129,7 @@ def deleteCharacters(data, index, resultData, resultValue, args) -> ReturnValue:
         resultValue[index] = ZERO
 
         if (row is not None):
-            word = row[data.getWordColumn()][ZERO]
+            word = str(row[data.getWordColumn()][ZERO])
 
             if (word is not None and args is not None):
 
@@ -123,7 +137,10 @@ def deleteCharacters(data, index, resultData, resultValue, args) -> ReturnValue:
                     word = word.replace(character, EMPTYSTRING)
 
                 if (row[data.getWordColumn()][ZERO] != word):
-                    row.loc[ZERO, data.getWordColumn()] = word
+                    if word is None:
+                        word = ""
+                        
+                    row.loc[ZERO, data.getWordColumn()] = str(word)
                     resultValue[index] = ONE
 
         resultData[index] = row
@@ -135,9 +152,44 @@ def deleteCharacters(data, index, resultData, resultValue, args) -> ReturnValue:
 
     return ret
 
+def removeNonASCIIWords(data, index, resultData, resultValue, args) -> ReturnValue:
+    ret = ReturnValue(ZERO)
 
-# In[ ]:
+    if (data.getData() is not None and data.getWordColumn() is not None):
 
+        row = pd.DataFrame(
+            data = [data.getData().iloc[index]], 
+            columns = data.getData().columns
+        ).reset_index(drop = True)
+
+        resultValue[index] = ZERO
+
+        if (row is not None):
+            word = str(row[data.getWordColumn()][ZERO])
+
+            characterIndex = ZERO
+            while characterIndex < len(word):
+                if (int.from_bytes(bytes(word[characterIndex], UTF8), LITTLE) > ONEHUNDREDTWENTYEIGHT):
+                    resultValue[index] = ONE
+                    if (characterIndex == ZERO):
+                        word = word[ONE:]   
+                    else:
+                        if (characterIndex == len(word) - ONE):
+                            word = word[:-ONE]
+                        else:
+                            word = word[:characterIndex] + word[characterIndex + ONE:]
+                else:
+                    characterIndex += ONE
+
+            row.loc[ZERO, data.getWordColumn()] = word
+
+        resultData[index] = row
+    else:
+        resultValue[index] = -ONE
+        ret.setValue(ONE)
+        ret.setMessage()
+
+    return ret
 
 def deleteWords(data, index, resultData, resultValue, args) -> ReturnValue:
     ret = ReturnValue(ZERO)
@@ -152,7 +204,7 @@ def deleteWords(data, index, resultData, resultValue, args) -> ReturnValue:
         resultValue[index] = ZERO
 
         if (row is not None):
-            word = row[data.getWordColumn()][ZERO]
+            word = str(row[data.getWordColumn()][ZERO])
 
             if (word is not None and args is not None and word in args):
                 row = None
@@ -167,10 +219,6 @@ def deleteWords(data, index, resultData, resultValue, args) -> ReturnValue:
 
     return ret
 
-
-# In[ ]:
-
-
 def replaceBIOFormat(data, index, resultData, resultValue, args) -> ReturnValue:
     ret = ReturnValue(ZERO)
 
@@ -184,7 +232,7 @@ def replaceBIOFormat(data, index, resultData, resultValue, args) -> ReturnValue:
         resultValue[index] = ZERO
 
         if (row is not None):
-            label = row[data.getLabelColumn()][ZERO]
+            label = str(row[data.getLabelColumn()][ZERO])
             
             if (args is not None and args[ZERO] is not None and 
                 label is not None and label in args[ZERO].keys()):
@@ -198,10 +246,6 @@ def replaceBIOFormat(data, index, resultData, resultValue, args) -> ReturnValue:
         ret.setMessage()
 
     return ret
-
-
-# In[6]:
-
 
 """
 This function splits the word in <data.getData()> on index <rowIndex> at every 
