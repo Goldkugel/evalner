@@ -23,9 +23,12 @@ NULL_STRINGS = ["null", "NA", "nan", ""]
 EXPERIMENTSFOLDER = "./experiments"
 INPUTFOLDER = "in"
 OUTPUTFOLDER = "out"
+STAR = "*"
 
 TASKLIST_INPUT_FOLDER = "in"
+TASKLIST_INPUT_FILE_NAME = "input.csv"
 TASKLIST_OUTPUT_FOLDER = "out"
+TASKLIST_OUTPUT_FILE_NAME = "output.csv"
 
 CSVFILE = ".csv"
 NEWLINE = "\n"
@@ -41,16 +44,107 @@ MODEL_RESULT_WORD_COLUMN = "word"
 
 TOKENSTARTCHARS = "##"
 
+DEFAULT_COLUMN_NAME = "column"
+
 INPUTFILENAME = "input{}.csv"
 OUTPUTFILENAME = "output{}.csv"
 
-EVAL_RETURNVALUE = "{} [Value: {}]"
+EVAL_RETURNVALUE = "{} [Value: {}, Class: {}, Method: {}]"
 
 RETURNVALUE_stdMsg = "Everything went well."
 RETURNVALUE_noLoggerCreated = "There is no Logger which can be used to log something."
 RETURNVALUE_loggingError = "An error ({}) occured while logging."
 
 LOGGER_replacingLogger = "The new singleton logger is replacing another logger."
+
+
+
+DEFAULTCOLUMNS = "DefaultColumns"
+
+
+
+DEFAULTCOLUMNS_setDocumentIDColumn = "setDocumentIDColumn"
+DEFAULTCOLUMNS_setDocumentIDColumn_replacedValue = "The column of the document ID changed it's value from \"{}\" to \"{}\"."
+DEFAULTCOLUMNS_setDocumentIDColumn_parameterIsNone = "The given parameter for the document ID column is None."
+DEFAULTCOLUMNS_setDocumentIDColumn_setValue = "The value of the document ID column has been set to \"{}\"."
+
+DEFAULTCOLUMNS_setSentenceIDColumn = "setSentenceIDColumn"
+DEFAULTCOLUMNS_setSentenceIDColumn_replacedValue = "The column of the sentence ID changed it's value from \"{}\" to \"{}\"."
+DEFAULTCOLUMNS_setSentenceIDColumn_parameterIsNone = "The given parameter for the sentence ID column is None."
+DEFAULTCOLUMNS_setSentenceIDColumn_setValue = "The value of the sentence ID column has been set to \"{}\"."
+
+DEFAULTCOLUMNS_setWordColumn = "setWordColumn"
+DEFAULTCOLUMNS_setWordColumn_replacedValue = "The column of the words changed it's value from \"{}\" to \"{}\"."
+DEFAULTCOLUMNS_setWordColumn_parameterIsNone = "The given parameter for the word column is None."
+DEFAULTCOLUMNS_setWordColumn_setValue = "The value of the word column has been set to \"{}\"."
+
+DEFAULTCOLUMNS_setLabelColumn = "setLabelColumn"
+DEFAULTCOLUMNS_setLabelColumn_replacedValue = "The column of the label changed it's value from \"{}\" to \"{}\"."
+DEFAULTCOLUMNS_setLabelColumn_parameterIsNone = "The given parameter for the label column is None."
+DEFAULTCOLUMNS_setLabelColumn_setValue = "The value of the label column has been set to \"{}\"."
+
+DEFAULTCOLUMNS_setWordIDColumn = "setWordIDColumn"
+DEFAULTCOLUMNS_setWordIDColumn_replacedValue = "The column of the word ID changed it's value from \"{}\" to \"{}\"."
+DEFAULTCOLUMNS_setWordIDColumn_parameterIsNone = "The given parameter for the word ID column is None."
+DEFAULTCOLUMNS_setWordIDColumn_setValue = "The value of the word ID column has been set to \"{}\"."
+
+
+DEFAULTCOLUMNS_setColumns = "setColumns"
+DEFAULTCOLUMNS_setColumns_warningsOccurred = "setColumns"
+DEFAULTCOLUMNS_setColumns_errorsOccurred = "setColumns"
+
+
+
+PROCESSFILE = "ProcessFile"
+
+
+
+PROCESSFILE_setInputFile = "setInputFile"
+PROCESSFILE_setInputFile_parameterIsNotAllowed = "The given input file has zero length."
+PROCESSFILE_setInputFile_replacedValue = "The input file has been changed from \"{}\" to \"{}\"."
+PROCESSFILE_setInputFile_setValue = "The value of the input file has been set to \"{}\"."
+
+PROCESSFILE_setOutputFile = "setOutputFile"
+PROCESSFILE_setOutputFile_parameterIsNotAllowed = "The given output file has zero length."
+PROCESSFILE_setOutputFile_replacedValue = "The output file has been changed from \"{}\" to \"{}\"."
+PROCESSFILE_setOutputFile_setValue = "The value of the output file has been set to \"{}\"."
+
+PROCESSFILE_copyInputFile = "copyInputFile"
+PROCESSFILE_copyInputFile_overwriteWarning = "The destination file \"{}\" has been overwritten with \"{}\"."
+PROCESSFILE_copyInputFile_noOverwrite = "Could not copy input file \"{}\" to \"{}\" because the file is already existing in the destination."
+PROCESSFILE_copyInputFile_filecopied = "The input file \"{}\" has been copied to \"{}\"."
+PROCESSFILE_copyInputFile_inputFileNotExisting = "The input file \"{}\" is not existing."
+PROCESSFILE_copyInputFile_parameterIsNotAllowed = "The directory has zero length."
+PROCESSFILE_copyInputFile_noInputFileAvailable = "No input file given to copy."
+
+PROCESSFILE_copyOutputFile = "copyOutputFile"
+PROCESSFILE_copyOutputFile_overwriteWarning = "The destination file \"{}\" has been overwritten with \"{}\"."
+PROCESSFILE_copyOutputFile_noOverwrite = "Could not copy output file \"{}\" to \"{}\" because the file is already existing in the destination."
+PROCESSFILE_copyOutputFile_filecopied = "The output file \"{}\" has been copied to \"{}\"."
+PROCESSFILE_copyOutputFile_inputFileNotExisting = "The output file \"{}\" is not existing."
+PROCESSFILE_copyOutputFile_parameterIsNotAllowed = "The directory has zero length."
+PROCESSFILE_copyOutputFile_noInputFileAvailable = "No output file given to copy."
+
+PROCESSFILE_splitInputFile = "splitInputFile"
+PROCESSFILE_splitInputFile_parameterIsNone = "The given directory is None."
+PROCESSFILE_splitInputFile_amountOfSplitsInvalid = "The amount of splits ({}) is invalid."
+PROCESSFILE_splitInputFile_inputFileDoesNotExist = "The input file \"{}\" does not exist."
+PROCESSFILE_splitInputFile_inputFileNotLoaded = "The input file data from \"{}\" could not be loaded."
+PROCESSFILE_splitInputFile_inputFileSplitted = "The input file has been splittet into {} files in \"{}\"."
+PROCESSFILE_splitInputFile_inputFileNotAvailable = "There is no input file to split up."
+PROCESSFILE_splitInputFile_parameterIsNotAllowed = "The directory has zero length."
+
+PROCESSFILE_mergeOutputFile = "mergeOutputFile"
+PROCESSFILE_mergeOutputFile_errorWhileWritingData = "An error occurred while writing data to \"{}\"."
+PROCESSFILE_mergeOutputFile_warningWhileWritingData = "A warning occurred while writing data to \"{}\"."
+PROCESSFILE_mergeOutputFile_couldNotLoadData = "Could not load data from file \"{}\"."
+PROCESSFILE_mergeOutputFile_noOutputDataGiven = "No target file given."
+PROCESSFILE_mergeOutputFile_noInputFilesGiven = "No files given to merge."
+PROCESSFILE_mergeOutputFile_overwritingNotAllowed = "Merged file is already existing and can not be overwritten."
+PROCESSFILE_mergeOutputFile_noFilesToMerge = "There are no files to merge."
+
+PROCESSFILE_compareInputFile = "compareInputFile"
+
 
 TASKLIST_startingTask = "Starting Task \"{}\"."
 TASKLIST_splittingDataForTask = "Splitting the data."
@@ -88,11 +182,7 @@ TASKLIST_START_warningWhileMergingOutput = "A warning occurred while merging dat
 TASKLIST_START_startingMerging = "Merging {} output files into \"{}\"."
 TASKLIST_SETOUTPUTDATA_noOutputDataGiven = "The given output data is None."
 TASKLIST_SETOUTPUTDATA_overwritingOutputData = "The new output data (\"{}\") is replacing another data (\"{}\")."
-TASKLIST_MERGEOUTPUTDATA_errorWhileWritingData = "An error occurred while writing data to \"{}\"."
-TASKLIST_MERGEOUTPUTDATA_warningWhileWritingData = "A warning occurred while writing data to \"{}\"."
-TASKLIST_MERGEOUTPUTDATA_couldNotLoadData = "Could not load data from file \"{}\"."
-TASKLIST_MERGEOUTPUTDATA_noOutputDataGiven = "No output file given."
-TASKLIST_MERGEOUTPUTDATA_noInputFilesGiven = "No input files given to merge."
+
 
 TASK_SETSTANDARDFILES_invalidFileCount = "The file count for task \"{}\" need to be set and be greater than zero."
 TASK_SETSTANDARDFILES_couldNotAddFile = "The standard files could not be added to the task \"{}\"."
@@ -131,19 +221,42 @@ TASK_START_unknownWarning = "An unknown warning occured while starting task \"{}
 
 SINGLEPROCESSINGFUNCTION_returnValueNotZero = "Processing row {} in task \"{}\" returned {}. Message: \"\""
 
-DATA_SETDOCUMENTIDCOLUMN_invalidColumnName = "The given name for the column of document IDs is invalid."
-DATA_SETSENTENCEIDCOLUMN_invalidColumnName = "The given name for the column of sentence IDs is invalid."
-DATA_SETWORDIDCOLUMN_invalidColumnName = "The given name for the column of word IDs is invalid."
-DATA_SETLABELCOLUMN_invalidColumnName = "The given name for the column of labels is invalid."
-DATA_SETWORDCOLUMN_invalidColumnName = "The given name for the column of words is invalid."
-DATA_LOADCSVDATA_invalidDirectory = "The given file directory is not valid."
-DATA_LOADCSVDATA_fileNotFound = "The given file \"{}\" could not be found."
-DATA_WRITECSVDATA_invalidDirectory = "The given file directory is not valid."
-DATA_WRITECSVDATA_fileFound = "The given file \"{}\" has been overwritten."
-DATA_WRITECSVDATA_noDataToWrite = "There is no data which could be written to \"{}\"."
-DATA_SETROW_invalidIndex = "The given index \"{}\" is out of range."
-DATA_SPLITUP_noFileSpecified = "There are no target files which have been specified."
-DATA_SPLITUP_noDataToSplit = "There is no data to split up into different files."
+
+
+DATA = "Data"
+
+
+DATA_addColumn = "addColumn"
+DATA_addColumn_columnAddedSuccessfully = "The column \"{}\" has been added to the data."
+DATA_addColumn_warningsWhileAddingColumn = "Warnings occurred while adding the column \"{}\"."
+DATA_addColumn_errorsWhileAddingColumn = "Errors occurred while adding the column \"{}\"."
+DATA_addColumn_lengthsDoNotMatch = "Could not add column \"{}\" to data since the dimensions do not match ({} (data) vs. {} (new column))."
+DATA_addColumn_replacingColumn = "Column \"{}\" has been replaced in data."
+DATA_addColumn_noColumnGiven = "No column data given for column \"{}\"."
+
+DATA_setData = "setData"
+DATA_setData_overwritingData = "The stored data is overwritten."
+DATA_setData_setDataCompleted = "The data (cols: {}, rows: {}) has been set successfully."
+
+DATA_loadCSVData = "loadCSVData"
+DATA_loadCSVData_invalidDirectory = "The given file directory is not valid."
+DATA_loadCSVData_fileNotFound = "The given file \"{}\" could not be found."
+DATA_loadCSVData_loadedSuccessfully = "The data in \"{}\" could be loaded successfully (cols: {}, rows: {})."
+
+DATA_writeCSVData = "writeCSVData"
+DATA_writeCSVData_invalidDirectory = "The given file directory is not valid."
+DATA_writeCSVData_fileFound = "The given file \"{}\" has been overwritten."
+DATA_writeCSVData_noDataToWrite = "There is no data which could be written to \"{}\"."
+DATA_writeCSVData_dataSaved = "The data has been written to file \"{}\"."
+
+
+DATA_setRow = "setRow"
+DATA_setRow_invalidIndex = "The given index {} is out of range."
+DATA_setRow_successfullySet = "The row at index {} has been set."
+
+
+
+
 
 
 

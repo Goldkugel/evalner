@@ -2,188 +2,131 @@
 # coding: utf-8
 
 import pandas as pd
-import numpy as np
 import os
-import math
-from datetime             import timedelta, datetime
 
 from ReturnValue          import *
 from Values               import *
 from Configuration        import *
 from Logger               import *
+from DefaultColumns       import *
 
-class Data:
+class Data(DefaultColumns):
     
+    #
     __data = None
-    
-    __documentIDColumn = None
-    
-    __sentenceIDColumn = None
-    
-    __wordIDColumn = None
-    
-    __wordColumn = None
-    
-    __labelColumn = None
 
     """
     
     """
     def __init__(self):
         self.__data = None
-        self.__documentIDColumn = None
-        self.__sentenceIDColumn = None
-        self.__wordIDColumn = None
-        self.__wordColumn = None
-        self.__labelColumn = None
 
     """
     
     """
-    def addColumn(self, column, columnName = "column") -> ReturnValue:
+    def addColumn(self, column, 
+        columnName: str = DEFAULT_COLUMN_NAME) -> ReturnValue:
         ret = ReturnValue(ZERO)
 
-        if (self.__data is None):
-            self.__data = pd.DataFrame(column, columns = [columnName])
-        else:
-            if (len(column) == len(self.__data)):
-                self.__data[columnName] = column
+        ret.setClassName(DATA)
+        ret.setMethodName(DATA_addColumn)
+
+        if (column is not None):
+            if (self.getData() is None):
+                update = self.setData(pd.DataFrame(column, columns = [columnName]))
+                if (update.getValue() == ZERO):
+                    ret.setMessage(DATA_addColumn_columnAddedSuccessfully.
+                        format(columnName))
+                else:
+                    if (update.getValue() > ZERO):
+                        ret.setValue(ONE)
+                        ret.setMessage(DATA_addColumn_warningsWhileAddingColumn.
+                            format(columnName))
+                    else:
+                        ret.setValue(-TWO)
+                        ret.setMessage(DATA_addColumn_errorsWhileAddingColumn.
+                            format(columnName))
+                    ret.addRoot(update)
             else:
-                ret.setValue(-ONE)
+                if (len(column) == len(self.getData())):
+                    data = self.getData()
+
+                    replace = columnName in data.columns
+
+                    data[columnName] = column
+                    update = self.setData(data)
+                    if (update.getValue() == ZERO):
+                        if (not replace):
+                            ret.setMessage(DATA_addColumn_columnAddedSuccessfully.
+                                format(columnName))
+                        else:
+                            ret.setValue(TWO)
+                            ret.setMessage(DATA_addColumn_replacingColumn.
+                                format(columnName))
+                    else:
+                        if (update.getValue() > ZERO):
+                            ret.setValue(ONE)
+                            ret.setMessage(DATA_addColumn_warningsWhileAddingColumn.
+                                format(columnName))
+                        else:
+                            ret.setValue(-TWO)
+                            ret.setMessage(DATA_addColumn_errorsWhileAddingColumn.
+                                format(columnName))
+                        ret.addRoot(update)
+                else:
+                    ret.setValue(-ONE)
+                    ret.setMessage(DATA_addColumn_lengthsDoNotMatch.
+                        format(columnName, len(self.getData()), len(columnName)))
+        else:
+            ret.setValue(THREE)
+            ret.setMessage(DATA_addColumn_noColumnGiven.format(columnName))
 
         return ret
     
+    """
+    
+    """
     def setData(self, data = None) -> ReturnValue:
         ret = ReturnValue(ZERO)
 
+        ret.setClassName(DATA)
+        ret.setMethodName(DATA_setData)
+
         if (self.__data is not None):
             ret.setValue(ONE)
+            ret.setMessage(DATA_setData_overwritingData)
+        else:
+            ret.setMessage(DATA_setData_setDataCompleted.
+                foramt(len(self.getData().columns), len(self.getData())))
 
         self.__data = data
 
         return ret
-
-    """
-    
-    """
-    def getDocumentIDColumn(self) -> str:
-        return self.__documentIDColumn
-    
-    """
-    
-    """
-    def getSentenceIDColumn(self) -> str:
-        return self.__sentenceIDColumn
-    
-    """
-    
-    """
-    def getWordIDColumn(self) -> str:
-        return self.__wordIDColumn
-    
-    """
-    
-    """
-    def getWordColumn(self) -> str:
-        return self.__wordColumn
-    
-    """
-    
-    """
-    def getLabelColumn(self) -> str:
-        return self.__labelColumn
-    
-    """
-    
-    """
-    def setDocumentIDColumn(self, documentIDColumn: str = None) -> ReturnValue:
-        ret = ReturnValue(ZERO)
-        
-        if documentIDColumn is not None:
-            self.__documentIDColumn = documentIDColumn
-        else:
-            ret.setValue(-ONE)
-            ret.setMessage(DATA_SETDOCUMENTIDCOLUMN_invalidColumnName)
-        
-        return ret
-    
-    """
-    
-    """
-    def setSentenceIDColumn(self, sentenceIDColumn:str = None) -> ReturnValue:
-        ret = ReturnValue(ZERO)
-        
-        if sentenceIDColumn is not None:
-            self.__sentenceIDColumn = sentenceIDColumn
-        else:
-            ret.setValue(-ONE)
-            ret.setMessage(DATA_SETSENTENCEIDCOLUMN_invalidColumnName)
-        
-        return ret
-        
-    """
-    
-    """
-    def setWordIDColumn(self, wordIDColumn: str = None) -> ReturnValue:
-        ret = ReturnValue(ZERO)
-        
-        if wordIDColumn is not None:
-            self.__wordIDColumn = wordIDColumn
-        else:
-            ret.setValue(-ONE)
-            ret.setMessage(DATA_SETWORDIDCOLUMN_invalidColumnName)
-        
-        return ret
-
-    """
-    
-    """
-    def setWordColumn(self, wordColumn: str = None) -> ReturnValue:
-        ret = ReturnValue(ZERO)
-        
-        if wordColumn is not None:
-            self.__wordColumn = wordColumn
-        else:
-            ret.setValue(-ONE)
-            ret.setMessage(DATA_SETWORDCOLUMN_invalidColumnName)
-            ret.setCritical()
-        
-        return ret
-        
-    """
-    
-    """
-    def setLabelColumn(self, labelColumn: str = None) -> ReturnValue:
-        ret = ReturnValue(ZERO)
-        
-        if labelColumn is not None:
-            self.__labelColumn = labelColumn
-        else:
-            ret.setValue(-ONE)
-            ret.setMessage(DATA_SETLABELCOLUMN_invalidColumnName)
-            ret.setCritical()
-        
-        return ret
-
     
     """
     
     """
     def loadCSVData(self, directory: str = None) -> ReturnValue:
         ret = ReturnValue(ZERO)
+
+        ret.setClassName(DATA)
+        ret.setMethodName(DATA_loadCSVData)
         
-        if directory is not None:
+        if (directory is not None and len(directory) > ZERO):
             if (os.path.isfile(directory)):
                 self.__data = pd.read_csv(directory, keep_default_na = False,
                     low_memory = False)
+                ret.setMessage(DATA_loadCSVData_loadedSuccessfully.
+                    format(directory, len(self.getData().columns), 
+                        len(self.getData())))
             else:
                 ret.setValue(-ONE)
-                ret.setMessage(DATA_LOADCSVDATA_fileNotFound.
+                ret.setMessage(DATA_loadCSVData_fileNotFound.
                     format(directory))
                 ret.setCritical()
         else:
             ret.setValue(ONE)
-            ret.setMessage(DATA_LOADCSVDATA_invalidDirectory)
+            ret.setMessage(DATA_loadCSVData_invalidDirectory)
             ret.setCritical()
             
         return ret
@@ -194,23 +137,29 @@ class Data:
     def writeCSVData(self, directory: str = None, mode: str = WRITE, 
         header: bool = True) -> ReturnValue:
         ret = ReturnValue(ZERO)
+
+        ret.setClassName(DATA)
+        ret.setMethodName(DATA_writeCSVData)
         
-        if directory is not None:
+        if (directory is not None and len(directory) > ZERO):
             if os.path.isfile(directory):
                 ret.setValue(TWO)
-                ret.setMessage(DATA_WRITECSVDATA_fileFound.
+                ret.setMessage(DATA_writeCSVData_fileFound.
                     format(directory))
 
             if self.getData() is not None:
                 self.getData().to_csv(directory, index = False, mode = mode, 
                     header = header)
+                if (ret.setValue() == ZERO):
+                    ret.setMessage(DATA_writeCSVData_dataSaved.
+                        format(directory))
             else:
                 ret.setValue(THREE)
-                ret.setMessage(DATA_WRITECSVDATA_noDataToWrite.
+                ret.setMessage(DATA_writeCSVData_noDataToWrite.
                     format(directory))
         else:
             ret.setValue(ONE)
-            ret.setMessage(DATA_WRITECSVDATA_invalidDirectory)
+            ret.setMessage(DATA_writeCSVData_invalidDirectory)
 
         return ret
     
@@ -280,13 +229,19 @@ class Data:
     """
     def setRow(self, rowIndex: int = None, elements = None) -> ReturnValue:
         ret = ReturnValue(ZERO)
+
+        ret.setClassName(DATA)
+        ret.setMethodName(DATA_setRow)
         
-        if rowIndex >= ZERO and rowIndex < self.getRowCount():
+        if (rowIndex is not None and 
+            rowIndex >= ZERO and 
+            rowIndex < self.getRowCount()):
             self.getData().loc[rowIndex] = elements
             self.getData().sort_index().reset_index(drop = True)
+            ret.setMessage(DATA_setRow_successfullySet.format(rowIndex))
         else:
             ret.setValue(-ONE)
-            ret.setMessage(DATA_SETROW_invalidIndex.
+            ret.setMessage(DATA_setRow_invalidIndex.
                 format(rowIndex))
             
         return ret
@@ -330,33 +285,3 @@ class Data:
         ret.setWordColumn(self.getWordColumn())
         ret.setWordIDColumn(self.getWordIDColumn())        
         return ret
-    
-    """
-    
-    """
-    def splitUp(self, files: list = None) -> ReturnValue:
-        ret = ReturnValue(ZERO)
-
-        if (self.getData() is not None and self.getRowCount() > len(files)):
-            if (files is not None and len(files) > ZERO):
-                count = self.getRowCount() / len(files)
-
-                for index in range(ZERO, len(files)):
-                    fromIndex = math.floor(count * index)
-                    toIndex = math.floor(count * (index + 1))
-                    
-                    if index == len(files) - 1:
-                        toIndex = self.getRowCount()
-
-                    d = self.getData().iloc[fromIndex:toIndex]
-                    d.to_csv(files[index], index = False)
-            else:
-                ret.setValue(TWO)
-                ret.setMessage(DATA_SPLITUP_noFileSpecified)
-        else:
-            ret.setValue(ONE)
-            ret.setMessage(DATA_SPLITUP_noDataToSplit)
-
-        return ret
-    
-

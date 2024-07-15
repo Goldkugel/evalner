@@ -22,6 +22,12 @@ class ReturnValue:
     __isDebug = False
 
     #
+    __className = None
+
+    #
+    __methodName = None
+
+    #
     __roots = list()
 
     """
@@ -37,9 +43,33 @@ class ReturnValue:
     """
     
     """
-    def addRoot(self, ret = None) -> int:
-        if (ret is not None):
-            self.__roots.append(ret)
+    def setClassName(self, className: str = None):
+        self.__className = className
+
+    """
+    
+    """
+    def setMethodName(self, methodName: str = None):
+        self.__methodName = methodName
+
+    """
+
+    """
+    def getClassName(self) -> str:
+        return self.__className
+    
+    """
+    
+    """
+    def getMethodName(self) -> str:
+        return self.__methodName
+
+    """
+    
+    """
+    def addRoot(self, root = None) -> int:
+        if (root is not None):
+            self.__roots.append(root)
 
     """
     
@@ -89,30 +119,37 @@ class ReturnValue:
     def setDebug(self, isDebug: bool = True):
         self.__isDebug = isDebug
 
+    
+
     """
     
     """
     def log(self):
         logger = Logger.getSingletonLogger()
 
-        if (self.__isCritical):
+        if (self.isCritical()):
             logger.printCritical(EVAL_RETURNVALUE.
-                format(self.getMessage(), self.getValue()))
+                format(self.getMessage(), self.getValue(), self.getClassName(), 
+                    self.getMethodName()))
         else:
-            if (self.__isDebug):
+            if (self.isDebug()):
                 logger.printDebug(EVAL_RETURNVALUE.
-                    format(self.getMessage(), self.getValue()))
+                    format(self.getMessage(), self.getValue(), 
+                        self.getClassName(), self.getMethodName()))
             else:
-                if (self.__value < ZERO):
+                if (self.getValue() < ZERO):
                     logger.printError(EVAL_RETURNVALUE.
-                        format(self.getMessage(), self.getValue()))
+                        format(self.getMessage(), self.getValue(), 
+                            self.getClassName(), self.getMethodName()))
                 else:
-                    if (self.__value > ZERO):
+                    if (self.getValue() > ZERO):
                         logger.printWarning(EVAL_RETURNVALUE.
-                            format(self.getMessage(), self.getValue()))
+                            format(self.getMessage(), self.getValue(), 
+                                self.getClassName(), self.getMethodName()))
                     else:
                         logger.printInfo(EVAL_RETURNVALUE.
-                            format(self.getMessage(), self.getValue()))
+                            format(self.getMessage(), self.getValue(), 
+                                self.getClassName(), self.getMethodName()))
 
         for root in self.__roots:
             root.log()

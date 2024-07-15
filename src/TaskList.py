@@ -14,23 +14,16 @@ from MultiprocessFunctions               import *
 from Logger                              import *
 from Task                                import *
 from ReturnValue                         import *
+from DefaultColumns                      import *
 
 """
 
 """
-class TaskList:
+class TaskList(DefaultColumns):
 
     # Variables used to save the name of the run and the experiment 
     __runName = None
     __experimentName = None
-    
-    # The most important column names are listed here, they will be given
-    # as input to the data (Data.ipynb) object. This variables are also static.
-    __wordColumn = None
-    __labelColumn = None
-    __wordIDColumn = None
-    __documentIDColumn = None
-    __sentenceIDColumn = None
     
     # List of task.
     __taskList = list()
@@ -47,11 +40,6 @@ class TaskList:
     def __init__(self):
         self.__runName = None
         self.__experimentName = None
-        self.__wordColumn = None
-        self.__wordIDColumn = None
-        self.__labelColumn = None
-        self.__documentIDColumn = None
-        self.__sentenceIDColumn = None
         self.__taskList = list()
         self.__inputData = None
         self.__outputData = None
@@ -62,11 +50,11 @@ class TaskList:
     def setOutputData(self, outputData: str = None) -> ReturnValue:
         ret = ReturnValue(ZERO)
 
-        if (outputData is not None):
-            if (self.__outputData is not None):
+        if (outputData is not None and len(outputData) > ZERO):
+            if (self.getOutputData() is not None):
                 ret.setValue(ONE)
                 ret.setMessage(TASKLIST_SETOUTPUTDATA_overwritingOutputData.
-                    format(outputData, self.__outputData))
+                    format(outputData, self.getOutputData()))
             self.__outputData = outputData
         else:
             ret.setValue(-ONE)
@@ -81,7 +69,7 @@ class TaskList:
     def setInputData(self, inputData: str = None) -> ReturnValue:
         ret = ReturnValue(ZERO)
 
-        if (inputData is not None):
+        if (inputData is not None and len(inputData) > ZERO):
             if (self.__inputData is not None):
                 ret.setValue(ONE)
                 ret.setMessage(TASKLIST_overwritingInputData.
@@ -112,7 +100,9 @@ class TaskList:
     def getTask(self, index: int = ZERO) -> Task:
         ret = None
 
-        if index >= ZERO and index < len(self.getTaskList()):
+        if (index is not None and 
+            index >= ZERO and 
+            index < len(self.getTaskList())):
             ret = self.getTaskList()[index]
 
         return ret
@@ -189,6 +179,28 @@ class TaskList:
             ret.setMessage(TASKLIST_noExperimentNameSet)
 
         return ret 
+    
+    """
+    
+    """
+    def hasModiefiedInputFile(self) -> bool:
+        ret = True
+
+        if (self.getRunName() is not None and self.getInputFile() is not None): 
+            taskListInputFile = os.path.join(
+                EXPERIMENTSFOLDER, 
+                self.getRunName(), 
+                TASKLIST_INPUT_FOLDER, 
+                TASKLIST_INPUT_FILE_NAME
+            )
+
+            if (os.path.isfile(taskListInputFile)):
+                if (not filecmp.cmp(taskListInputFile, self.getInputFile())):
+                    ret = False
+            else:
+                ret = False
+
+        return ret
 
     """
     
@@ -205,6 +217,23 @@ class TaskList:
                     ret.addRoot(createDirs)
                     ret.setValue(TWO)
                     ret.setMessage(TASKLIST_START_createDirsWarning)
+
+
+
+                # ToDo's:
+                # Check if input file is already stored in input of 
+                # Tasklist. If so, check if the content is the same.
+                # If the inputfile changed or was not present, do not skip the
+                # tasks and replace the input files for the first task if
+                # already existing. 
+                
+
+
+
+
+
+
+
 
                 index = ZERO
                 while(index < len(self.getTaskList()) and 
@@ -390,6 +419,9 @@ class TaskList:
 
         return ret
 
+    def getOutputData(self) -> str:
+        return self.__outputData
+
     
     def getInputData(self) -> str:
         return self.__inputData
@@ -443,36 +475,6 @@ class TaskList:
                     self.getTaskList().append(nTask)
         
         return ret
-    
-    """
-    
-    """
-    def getWordColumn(self) -> str:
-        return self.__wordColumn
-    
-    """
-    
-    """
-    def getWordIDColumn(self) -> str:
-        return self.__wordIDColumn
-    
-    """
-    
-    """
-    def getLabelColumn(self) -> str:
-        return self.__labelColumn
-    
-    """
-    
-    """
-    def getDocumentIDColumn(self) -> str:
-        return self.__documentIDColumn
-    
-    """
-    
-    """
-    def getSentenceIDColumn(self) -> str:
-        return self.__sentenceIDColumn
 
     """
     Sets the name of the run.
@@ -550,64 +552,3 @@ class TaskList:
             ret = -ONE
 
         return ret
-    
-    """
-    This method sets the most important column names which will be given as 
-    input to the data (Data.ipynb) object.
-
-    All parameter are converted to strings.
-
-    wordColumn: the name of the column in which the words are stored.
-    labelColumn: the name of the column in which the labels or tags are stored.
-    wordIDColumn: the name of the column in which the IDs of the words are
-        stored. 
-    documentIDColumn: the name of the column in which the IDs of the documents
-        are stored, denoting sentences which belong together.
-    sentenceIDColumn: the name of the column in which the IDs of the sentences
-        are stored.
-    return: ZERO if everything went well,
-        -ONE if <wordColumn> was None or had zero length,
-        -TWO if <labelColumn> was None or had zero length, 
-        ONE if <wordIDColumn> was None or had zero length,
-        TWO if <wordIDColumn> was None or had zero length,
-        THREE if <documentIDColumn> was None or had zero length 
-    """
-    def setColumns( self, wordColumn: str, labelColumn: str, 
-                    wordIDColumn: str = None, documentIDColumn: str = None, 
-                    sentenceIDColumn: str = None) -> ReturnValue:
-        ret = ReturnValue(ZERO)
-
-        # <wordColumn> and <labelColumn> are essential for named entity
-        # recognition and therefore need to be set.
-        if wordColumn is not None or len(wordColumn) < ONE:
-            self.__wordColumn = wordColumn
-            if labelColumn is not None or len(labelColumn) < ONE:
-                self.__labelColumn = labelColumn
-                if wordIDColumn is not None or len(wordIDColumn) < ONE:
-                    self.__wordIDColumn = wordIDColumn  
-                    if sentenceIDColumn is not None or len(sentenceIDColumn) < ONE:
-                        self.__sentenceIDColumn = sentenceIDColumn
-                        if documentIDColumn is not None or len(documentIDColumn) < ONE:
-                            self.__documentIDColumn = documentIDColumn
-                        else:
-                            ret.setValue(THREE)
-                            ret.setMessage(TASKLIST_SETCOLUMNS_noDocumentIDColumn)
-                    else:
-                        ret.setValue(TWO)
-                        ret.setMessage(TASKLIST_SETCOLUMNS_noSentenceIDColumn)
-                else:
-                    ret.setValue(ONE)
-                    ret.setMessage(TASKLIST_SETCOLUMNS_noWordIDColumn)
-            else:
-                ret.setValue(-TWO)
-                ret.setCritical()
-                ret.setMessage(TASKLIST_SETCOLUMNS_noLabelColumn)
-        else:
-            ret.setValue(-ONE)
-            ret.setMessage(TASKLIST_SETCOLUMNS_noWordColumn)
-            ret.setCritical()
-
-        return ret
-
-
-# %%
